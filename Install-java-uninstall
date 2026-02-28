@@ -1,12 +1,12 @@
 Install Java:
 =============
-sudo apt install default-jre
+sudo apt install openjdk-16-jdk
 
 Uninstall Java:
 ===============
 dpkg -l | grep 21
 
-sudo apt-get purge openjdk-21*
+sudo apt-get purge version name  Like (openjdk-21*)
 
 sudo apt-get autoremove && sudo apt-get autoclean
 
@@ -20,4 +20,11 @@ If your goal was just to stop Jenkins from using Java 21 and use Java 17 instead
 You can just tell Ubuntu which one to use as the default:
 sudo update-alternatives --config java
 
-This will give you a list of installed versions. You just type the number of the version you want to be the "boss."
+This will give you a list of installed versions.
+====================================
+You just type the number of the version you want to be the "boss."
+
+sudo update-alternatives --config java
+
+
+
