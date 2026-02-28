@@ -1,0 +1,7 @@
+==== How to Restart After Fixing:
+     
+   > sudo systemctl daemon-reload (if you changed any config files)
+
+     sudo systemctl restart jenkins
+
+     sudo systemctl status jenkins
