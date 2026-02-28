@@ -1,0 +1,2 @@
+sudo chown -R jenkins:jenkins /var/lib/jenkins/jobs/*
+ 
