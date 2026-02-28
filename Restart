@@ -4,4 +4,4 @@
 
      sudo systemctl restart jenkins
 
-     sudo systemctl status jenkins
+     sudo systemctl status jenkins 
