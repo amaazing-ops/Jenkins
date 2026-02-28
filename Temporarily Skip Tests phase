@@ -1,0 +1,11 @@
+To skip tests, add the -DskipTests flag:
+========================================
+mvn clean install -DskipTests
+
+** Run this command to view the plain-text reports:
+=====================
+cat /root/ishaa/target/surefire-reports/*.txt
+
+If you prefer to see the test failures directly in your terminal output without opening the report files, you can tell Maven to print them to the console.
+Run your Maven command again with this flag added:
+   mvn test -Dsurefire.useFile=false
