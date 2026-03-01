@@ -1,0 +1,83 @@
+## Create Backup volumes: 
+================
+EBS(Elastic block store): 
+Go to volumes 
+Go to your AWS EC2 Console.
+
+Find the stopped, infected instance. Go to the Storage tab and click on the Volume ID.
+
+Right-click the volume and select Create Snapshot.
+
+      Once the snapshot finishes, go to Snapshots, right-click the new snapshot, and select Create Volume.
+
+
+
+## 2. Attach to a Clean "Recovery" Server
+================
+
+Launch a brand new, clean EC2 instance (this will be your new Jenkins server or just a temporary recovery box).
+
+Go back to your Volumes list, right-click the newly created backup volume, and select Attach Volume.
+
+Attach it to your clean instance (it will likely be assigned a name like /dev/xvdf or /dev/nvme1n1).
+
+
+
+## 3.  Mount the Drive Safely (Crucial Step):
+================
+   SSH into your clean instance. We are going to mount the infected drive, 
+    but we will use special flags (noexec and nosuid) that mathematically prevent any malware or scripts on that drive from executing
+     sudo mkdir /mnt/infected_jenkins
+      sudo mount -o noexec,nosuid /dev/nvme1n1p1 /mnt/infected_jenkins
+
+
+
+## 4. Copy Only What You Need
+================
+Do not copy plugins or the entire workspace, as attackers often hide backdoors there. Only copy your configuration files, job definitions, and secrets.
+
+Jenkins stores its data in /var/lib/jenkins. On your mounted drive, this will be at /mnt/infected_jenkins/var/lib/jenkins.
+
+Copy these specific items to your clean server's home directory for safekeeping:
+
+config.xml (Main configuration)
+
+jobs/ directory (Contains your pipelines/jobs)
+
+users/ directory (User accounts)
+
+secrets/ directory and credentials.xml (Needed to decrypt your stored passwords)
+
+
+  # Example of safely copying your jobs
+cp -r /mnt/infected_jenkins/var/lib/jenkins/jobs ~/recovered_jobs/
+
+ Once copied, unmount the drive (sudo umount /mnt/infected_jenkins) and delete the infected volume from AWS.\
+
+
+
+  ## Phase 2: Setting up Restrictive Firewalls
+====================
+The reason the attackers found you is that port 8080 was open to 0.0.0.0/0 (the entire internet). Automated bots scan the entire internet 24/7 looking for open Jenkins ports.
+
+When setting up your new Jenkins EC2 instance, you must configure the Security Group (AWS's firewall) correctly.
+
+1. Go to Security Groups in AWS
+Find the Security Group attached to your new instance and edit the Inbound Rules.
+
+2. Delete the "Open to the World" Rules
+If you see any rules where the Source is 0.0.0.0/0 (especially for Port 22 SSH or Port 8080 Custom TCP), delete them immediately.
+
+3. Restrict to Your IP Address
+Create two new rules:
+
+Type: SSH | Port: 22 | Source: Select "My IP" from the dropdown.
+
+Type: Custom TCP | Port: 8080 | Source: Select "My IP" from the dropdown.
+
+Note: If your local internet service provider changes your IP address frequently, you will lose access. If that happens, simply log back into the AWS Console and update the Security Group with your new "My IP".
+
+4. Consider a VPN or Reverse Proxy (Long-Term)
+For a production environment, it is highly recommended to put Jenkins behind a reverse proxy (like Nginx) with HTTPS/SSL certificates, or restrict access so it is only reachable via a company VPN.
+
+Would you like the exact terminal commands to properly restore those copied files (jobs, secrets, etc.) into a fresh, clean installation of Jenkins?
