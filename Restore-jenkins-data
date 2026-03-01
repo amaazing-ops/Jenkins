@@ -1,0 +1,43 @@
+1. Create a staging directory:
+mkdir -p ~/recovered_jenkins_data
+
+Copy the essential files:
+he -r flag stands for "recursive," which allows you to copy entire directories and their contents. Run these commands one by one:
+sudo cp -r /mnt/infected_jenkins/var/lib/jenkins/jobs ~/recovered_jenkins_data/
+sudo cp -r /mnt/infected_jenkins/var/lib/jenkins/users ~/recovered_jenkins_data/
+sudo cp -r /mnt/infected_jenkins/var/lib/jenkins/secrets ~/recovered_jenkins_data/
+sudo cp /mnt/infected_jenkins/var/lib/jenkins/credentials.xml ~/recovered_jenkins_data/
+sudo cp /mnt/infected_jenkins/var/lib/jenkins/config.xml ~/recovered_jenkins_data/
+
+3. Unmount the infected drive:
+sudo umount /mnt/infected_jenkins
+Phase 2: Prepare the New Jenkins Installation
+Before restoring the files, you must have a brand-new, clean version of Jenkins installed on this server. If you have not installed it yet, please do so using the official Jenkins documentation for your operating system.
+
+Once the fresh Jenkins is installed, you must stop the service before modifying its core files.
+
+Stop the Jenkins service:
+sudo systemctl stop jenkins
+
+Phase 3: Restore and Fix Permissions
+Now, we will move your rescued data into the live Jenkins directory and ensure the system recognizes it.
+
+1. Copy the staged data into the live directory:
+This command moves the contents of your staging folder directly into the fresh Jenkins home directory.
+
+Bash
+sudo cp -r ~/recovered_jenkins_data/* /var/lib/jenkins/
+
+2. Repair file ownership (Crucial Step):
+When you copied the files using sudo, the root user took ownership of them. The Jenkins application runs under its own specific user account (named jenkins). If Jenkins does not own these files, it will crash or fail to read your jobs. The chown (change owner) command fixes this.
+
+Bash
+sudo chown -R jenkins:jenkins /var/lib/jenkins
+3. Start the Jenkins service:
+
+Bash
+sudo systemctl start jenkins
+4. Verify the service is running smoothly:
+
+Bash
+sudo systemctl status jenkins
