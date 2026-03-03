@@ -1,7 +1,8 @@
-==== How to Restart After Fixing:
-     
-   > sudo systemctl daemon-reload (if you changed any config files)
-
-     sudo systemctl restart jenkins
-
-     sudo systemctl status jenkins 
+==== How to Stop and Restart Jenkins:
+======================================
+sudo systemctl stop jenkins
+ vi /lib/systemcd/system/jenkins.service
+   change environment port to: 8843
+     sudo systemctl daemon-reload (if you changed any config files)
+       sudo systemctl restart jenkins
+         sudo systemctl status jenkins 
